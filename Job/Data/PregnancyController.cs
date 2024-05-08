@@ -104,7 +104,7 @@ namespace Job.Data
 					foreach (var registration in registrations.Result)
 					{
 						// check if registration exists
-						var exists = ctx.Registrations.FirstOrDefault(r => r.Email == registration.Email);
+						var exists = ctx.Registrations.FirstOrDefault(r => r.Email == registration.Email && r.Created > DateTime.Now.AddDays(28));
 						if (exists == null)
 						{
 							if (registration.DueDate != null && registration.OptinDate != null)
