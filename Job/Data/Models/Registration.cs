@@ -20,15 +20,16 @@ namespace Job.Data.Models
 		public string FirstName { get; set; }
 		[Column("last_name")]
 		public string LastName { get; set; }
-		[Column("due_date")]
-		public string? DueDate { get; set; }
+		[Column("due_date", TypeName = "date")]
+		public DateTime DueDate { get; set; }
 		[Column("optin_date")]
-		public string? OptinDate { get; set; }
+		public DateTime? OptinDate { get; set; }
 		[Column("consent_text")]
 		public string? ConsentText { get; set; }
 		public string? Source { get; set; }
 		public string? Country { get; set; }
 		public string? Os { get; set; }
-		public string? Local { get; set; }
+		public string? Locale { get; set; }
+		public bool Processed { get; set; }
 	}
 }

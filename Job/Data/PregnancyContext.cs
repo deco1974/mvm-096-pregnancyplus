@@ -25,5 +25,6 @@ namespace Job.Data
 
 		public virtual DbSet<Registration> Registrations { get; set; }
 		public virtual DbSet<Token> Tokens { get; set; }
+		public virtual DbSet<Log> Logs { get; set; }
 	}
 }

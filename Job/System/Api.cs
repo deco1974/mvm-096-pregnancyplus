@@ -5,15 +5,16 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Job.Data;
 using Job.Data.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace Job.System
 {
-	public class Api
+	public class Api : IDisposable
 	{
-		private IConfiguration _settings;
-		public Api(IConfiguration settings)
+		private readonly IConfigurationSection _settings;
+		public Api(IConfigurationSection settings)
 		{
 			_settings = settings;
 		}
@@ -37,9 +38,58 @@ namespace Job.System
 			var json = JsonSerializer.Serialize(objAuth);
 			request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 			var response = client.Send(request);
-			response.EnsureSuccessStatusCode();
+			try
+			{
+				response.EnsureSuccessStatusCode();
+				return response.Content.ReadAsStringAsync().Result;
+			}
+			catch (HttpRequestException e)
+			{
+				new PregnancyController(_settings).Log(Log.TypeEnum.Error, "Error getting token:\n" + e.HttpRequestError);
+			}
 
-			return response.Content.ReadAsStringAsync().Result;
+			return null;
+		}
+
+
+		/// <summary>
+		/// Get registrations
+		/// </summary>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		public ApiRegistration.Response? GetRegistrations(Token token, DateTime? from = null, DateTime? to = null, int? page = null, int? limit = null)
+		{
+			var client  = new HttpClient();
+			var request = new HttpRequestMessage(HttpMethod.Post, "https://webservices-test-dev.us-east-1.elasticbeanstalk.com/api/partners/coregistration");
+			request.Headers.Add("Authorization", $"Bearer {token.AccessToken}");
+
+			var objRegistration = new ApiRegistration
+			{
+				OptinDateFrom = from?.ToString("yyyy-MM-ddTHH:mm:ss.000Z"),
+			};
+
+			var json = JsonSerializer.Serialize(objRegistration);
+			request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+			var response = client.Send(request);
+			try
+			{
+				response.EnsureSuccessStatusCode();
+				var result = response.Content.ReadAsStringAsync().Result;
+				
+
+				return JsonSerializer.Deserialize<ApiRegistration.Response>(result, new JsonSerializerOptions { IgnoreNullValues = true});
+			}
+			catch (HttpRequestException e)
+			{
+				new PregnancyController(_settings).Log(Log.TypeEnum.Error, "Error getting registrations:\n" + e.StatusCode);
+			}
+
+			return null;
+		}
+
+		public void Dispose()
+		{
+			// TODO release managed resources here
 		}
 	}
 }
