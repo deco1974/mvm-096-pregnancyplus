@@ -34,6 +34,10 @@ namespace Job.Data.Models
 		[JsonPropertyName("access_token")]
 		public string? AccessToken { get; set; }
 
+		[Column("live")]
+		[JsonIgnore]
+		public bool Live { get; set; }
+
 		[NotMapped]
 		public bool Expired => Created.AddSeconds(Convert.ToDouble(ExpiresIn)) < DateTime.Now;
 	}

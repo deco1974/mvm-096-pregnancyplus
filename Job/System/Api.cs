@@ -25,7 +25,7 @@ namespace Job.System
 		public string? Auth()
 		{
 			var client = new HttpClient();
-			var request = new HttpRequestMessage(HttpMethod.Post, "https://digitalplus-test.eu.auth0.com/oauth/token");
+			var request = new HttpRequestMessage(HttpMethod.Post, _settings["endpoint_auth"]);
 
 			var objAuth = new ApiAuth
 			{
@@ -60,7 +60,7 @@ namespace Job.System
 		public ApiRegistration.Response? GetRegistrations(Token token, DateTime? from = null, DateTime? to = null, int? page = null, int? limit = null)
 		{
 			var client  = new HttpClient();
-			var request = new HttpRequestMessage(HttpMethod.Post, "https://webservices-test-dev.us-east-1.elasticbeanstalk.com/api/partners/coregistration");
+			var request = new HttpRequestMessage(HttpMethod.Post, _settings["endpoint_registration"]);
 			request.Headers.Add("Authorization", $"Bearer {token.AccessToken}");
 
 			var objRegistration = new ApiRegistration
@@ -82,6 +82,7 @@ namespace Job.System
 			catch (HttpRequestException e)
 			{
 				new PregnancyController(_settings).Log(Log.TypeEnum.Error, "Error getting registrations:\n" + e.StatusCode);
+				Helper.Email("Error Pregnancy+", "Error getting registrations:\n\n" + e.StatusCode);
 			}
 
 			return null;

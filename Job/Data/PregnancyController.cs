@@ -53,8 +53,13 @@ namespace Job.Data
 			using (var ctx = new PregnancyContext())
 			{
 				// get last token
-				token = ctx.Tokens.OrderByDescending(t => t.Id).FirstOrDefault();
-				if (token is { Expired: true })
+#if DEBUG
+				token = ctx.Tokens.OrderByDescending(t => t.Id).FirstOrDefault(t => t.Live == false);
+#else
+				token = ctx.Tokens.OrderByDescending(t => t.Id).FirstOrDefault(t => t.Live == true);
+#endif
+
+				if (token is null or { Expired: true })
 				{
 					// get new token
 					var api  = new Api(_settings);
@@ -68,6 +73,11 @@ namespace Job.Data
 						{
 							// save new token
 							token.Created = DateTime.Now;
+#if DEBUG
+							token.Live = false;
+#else
+							token.Live = true;
+#endif
 							ctx.Tokens.Add(token);
 							ctx.SaveChanges();
 							Log(Models.Log.TypeEnum.Info, "Token created");
@@ -84,6 +94,12 @@ namespace Job.Data
 						Helper.Email("Error Pregnancy+", "Error 400 - connection failed\n\n");
 					}
 				}
+				else
+				{
+					Log(Models.Log.TypeEnum.Info, "Token re-used");
+				}
+
+
 			}
 			return token;
 		}
@@ -187,7 +203,7 @@ namespace Job.Data
 
 								foreach (var registration in registrations)
 								{
-									//registration.Processed         = true;
+									registration.Processed         = true;
 									ctx.Entry(registration).State = EntityState.Modified;
 								}
 
