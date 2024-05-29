@@ -56,6 +56,7 @@ namespace Job.System
 		/// Get registrations
 		/// </summary>
 		/// <param name="token"></param>
+		/// <param name="from"></param>
 		/// <returns></returns>
 		public ApiRegistration.Response? GetRegistrations(Token token, DateTime? from = null, DateTime? to = null, int? page = null, int? limit = null)
 		{

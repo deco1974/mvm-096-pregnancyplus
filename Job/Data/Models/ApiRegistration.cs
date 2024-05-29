@@ -4,18 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Job.Data.Models
 {
 	public class ApiRegistration
 	{
 		[JsonPropertyName("optin_date_from")]
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
 		public string? OptinDateFrom { get; set; }
 		[JsonPropertyName("optin_date_to")]
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
 		public string? OptinDateTo { get; set; }
 		[JsonPropertyName("limit")]
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
 		public int? Limit { get; set; }
 		[JsonPropertyName("page")]
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
 		public int? Page { get; set; }
 
 		public class Response
