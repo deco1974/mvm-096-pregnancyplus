@@ -111,7 +111,7 @@ namespace Job.Data
 			using (var ctx = new PregnancyContext())
 			{
 				var api           = new Api(_settings);
-				var optinFrom = ctx.Registrations.OrderByDescending(r => r.Created).FirstOrDefault()?.Created;
+				var optinFrom = ctx.Registrations.OrderByDescending(r => r.OptinDate).FirstOrDefault()?.OptinDate;
 				var registrations    = api.GetRegistrations(token, optinFrom);
 				var listRegistration = new List<Registration>();
 
